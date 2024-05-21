@@ -11,7 +11,7 @@ import { jsPDF } from "jspdf";
  * @returns
  */
 export function getRowNumber(data: any) {
-  return data.row.loadIndex + 1;
+  return data.row.key;
 }
 
 /**

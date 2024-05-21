@@ -50,9 +50,19 @@ export const users = pgView("users").as((qb) => {
       rawUserMetaData: authUsers.rawUserMetaData,
       name: userProfiles.name,
       userRoleId: userProfiles.userRoleId,
-      roleName: userRoles.name,
+      userRoleName: userRoles.name,
     })
     .from(authUsers)
     .innerJoin(userProfiles, eq(authUsers.id, userProfiles.id))
     .innerJoin(userRoles, eq(userProfiles.userRoleId, userRoles.id));
 });
+
+export type Tusers = {
+  name: string | null;
+  id: string;
+  email: string;
+  rawAppMetaData: unknown;
+  rawUserMetaData: unknown;
+  userRoleId: number;
+  userRoleName: string;
+};
