@@ -24,12 +24,12 @@ export default async function DataUser() {
   // get current session
   const supabase = createClient();
   const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
-  if (error || !session) {
-    return <div>Error: {error?.message}</div>;
+  if (!user || userError) {
+    return <div>Error: {userError?.message}</div>;
   }
 
   return (
@@ -38,7 +38,7 @@ export default async function DataUser() {
       <h2 className="mb-4 text-3xl font-semibold">User</h2>
 
       {/* datagrid */}
-      <UserDataGrid userData={userData} currentUserId={session.user.id} />
+      <UserDataGrid userData={userData} currentUserId={user.id} />
     </section>
   );
 }

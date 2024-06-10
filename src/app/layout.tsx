@@ -19,6 +19,8 @@ import {
 } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
+import { SearchParamsNotification } from "@/components/notification";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Next.js Formal Template",
@@ -52,6 +54,10 @@ export default function RootLayout({
               zIndex={1000}
               autoClose={10000}
             />
+
+            <Suspense>
+              <SearchParamsNotification />
+            </Suspense>
 
             <Box bg={"gray.1"}>{children}</Box>
           </ModalsProvider>

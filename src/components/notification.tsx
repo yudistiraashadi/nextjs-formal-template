@@ -13,9 +13,9 @@ import { notificationHelper } from "@/utils/notification";
 export function SearchParamsNotification() {
   const searchParams = useSearchParams();
 
-  const notificationType = searchParams.get("notification-type");
-  const notificationMessage = searchParams.get("notification-message");
-  const notificationTitle = searchParams.get("notification-title");
+  const notificationType = searchParams.get("notificationType");
+  const notificationMessage = searchParams.get("notificationMessage");
+  const notificationTitle = searchParams.get("notificationTitle");
 
   useEffect(() => {
     if (notificationMessage) {

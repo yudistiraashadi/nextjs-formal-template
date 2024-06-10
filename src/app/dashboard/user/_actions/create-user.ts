@@ -105,8 +105,8 @@ export async function createUser(prevState: any, formData: FormData) {
   revalidatePath("/dashboard/user");
 
   const searchParamString = new URLSearchParams({
-    "notification-type": "success",
-    "notification-message": `Berhasil membuat user baru Username: ${
+    notificationType: "success",
+    notificationMessage: `Berhasil membuat user baru Username: ${
       createUserData.user.email?.split("@")[0]
     }`,
   }).toString();

@@ -119,8 +119,8 @@ export async function editUser(prevState: any, formData: FormData) {
   revalidatePath("/dashboard/user");
 
   const searchParamString = new URLSearchParams({
-    "notification-type": "success",
-    "notification-message": `Berhasil edit user`,
+    notificationType: "success",
+    notificationMessage: `Berhasil edit user`,
   }).toString();
 
   permanentRedirect(`/dashboard/user?${searchParamString}`);
