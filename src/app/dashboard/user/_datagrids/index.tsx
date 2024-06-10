@@ -17,8 +17,9 @@ import { Badge } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { users } from "@/db/drizzle/schema";
+import { InferSelectModel } from "drizzle-orm";
 
-import { Tusers } from "@/db/drizzle/schema";
 import {
   SCROLLING_CONFIG,
   exportExcel,
@@ -45,7 +46,9 @@ export function UserDataGrid({
   userData,
   currentUserId,
 }: {
-  userData: Tusers[];
+  userData: (InferSelectModel<typeof users> & {
+    no: number;
+  })[];
   currentUserId: string;
 }) {
   // DELETE USER

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/db/supabase/server";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
   // Create an unmodified response
@@ -14,18 +14,78 @@ export async function middleware(request: NextRequest) {
     // Check session //
     ///////////////////
 
-    // Refresh session if expired - required for Server Components
-    // https://supabase.com/docs/guides/auth/auth-helpers/nextjs#managing-session-with-middleware
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            // If the cookie is updated, update the cookies for the request and response
+            request.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            response.cookies.set({
+              name,
+              value,
+              ...options,
+            });
+          },
+          remove(name: string, options: CookieOptions) {
+            // If the cookie is removed, update the cookies for the request and response
+            request.cookies.set({
+              name,
+              value: "",
+              ...options,
+            });
+            response = NextResponse.next({
+              request: {
+                headers: request.headers,
+              },
+            });
+            response.cookies.set({
+              name,
+              value: "",
+              ...options,
+            });
+          },
+        },
+      }
+    );
 
-    const supabase = createClient();
+    // This will refresh session if expired - required for Server Components
+    // https://supabase.com/docs/guides/auth/server-side/nextjs
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
+      data: { user },
+    } = await supabase.auth.getUser();
 
     // not signed in / session expired
-    if (!session) {
+    if (!user) {
       return NextResponse.redirect(new URL("/", request.url));
     }
+
+    // ONLY FOR ADMIN
+    if (request.nextUrl.pathname.startsWith("/dashboard/user")) {
+      const { data: userData } = await supabase
+        .from("users")
+        .select("user_role_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!userData || userData.user_role_id !== 2) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+    // END OF ONLY FOR ADMIN
   }
 
   return response;

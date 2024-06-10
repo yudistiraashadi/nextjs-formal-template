@@ -1,30 +1,12 @@
 import {
   pgTable,
-  pgView,
   bigserial,
   text,
   timestamp,
   uuid,
   jsonb,
-  pgSchema,
 } from "drizzle-orm/pg-core";
-import { eq } from "drizzle-orm";
 
-/**
- * Auth Schema
- */
-export const authSchema = pgSchema("auth");
-
-export const authUsers = authSchema.table("users", {
-  id: uuid("id").primaryKey(),
-  email: text("email").notNull(),
-  rawAppMetaData: jsonb("raw_app_meta_data"),
-  rawUserMetaData: jsonb("raw_user_meta_data"),
-});
-
-/**
- * Public Schema
- */
 export const userRoles = pgTable("user_roles", {
   id: bigserial("id", { mode: "number" }),
   createdAt: timestamp("created_at").defaultNow(),
@@ -41,28 +23,12 @@ export const userProfiles = pgTable("user_profiles", {
   ),
 });
 
-export const users = pgView("users").as((qb) => {
-  return qb
-    .select({
-      id: authUsers.id,
-      email: authUsers.email,
-      rawAppMetaData: authUsers.rawAppMetaData,
-      rawUserMetaData: authUsers.rawUserMetaData,
-      name: userProfiles.name,
-      userRoleId: userProfiles.userRoleId,
-      userRoleName: userRoles.name,
-    })
-    .from(authUsers)
-    .innerJoin(userProfiles, eq(authUsers.id, userProfiles.id))
-    .innerJoin(userRoles, eq(userProfiles.userRoleId, userRoles.id));
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey(),
+  email: text("email"),
+  name: text("name"),
+  rawAppMetaData: jsonb("raw_app_meta_data"),
+  rawUserMetaData: jsonb("raw_user_meta_data"),
+  userRoleId: bigserial("user_role_id", { mode: "number" }),
+  userRoleName: text("user_role_name"),
 });
-
-export type Tusers = {
-  name: string | null;
-  id: string;
-  email: string;
-  rawAppMetaData: unknown;
-  rawUserMetaData: unknown;
-  userRoleId: number;
-  userRoleName: string;
-};

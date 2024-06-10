@@ -14,12 +14,11 @@ import {
 } from "@mantine/core";
 import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
-import { type User } from "@supabase/supabase-js";
+import { users } from "@/db/drizzle/schema";
+import { InferSelectModel } from "drizzle-orm";
 
 import Link from "next/link";
-import Image from "next/image";
 
-import UnileverLogo from "@/assets/images/unilever_logo.png";
 import { logout } from "@/app/_actions";
 
 /**
@@ -29,7 +28,7 @@ export function DashboardAppShell({
   children,
   userData,
 }: React.PropsWithChildren<{
-  userData: User;
+  userData: InferSelectModel<typeof users>;
 }>) {
   const [opened, { toggle }] = useDisclosure();
 
@@ -71,7 +70,7 @@ export function DashboardAppShell({
                     px={"0.25rem"}
                   >
                     <Text fw={500} size="md" lh={1}>
-                      {userData.user_metadata.name}
+                      {userData.name}
                     </Text>
                   </Button>
                 </Menu.Target>
@@ -100,7 +99,7 @@ export function DashboardAppShell({
         />
 
         {/* ONLY FOR ADMIN */}
-        {userData.app_metadata.user_role_id === 2 && (
+        {userData.userRoleId === 2 && (
           <NavLink
             label="User"
             onClick={toggle}

@@ -13,14 +13,12 @@ export default async function DataUser() {
     .from(users)
     .orderBy(users.userRoleName)
     .then((res) => {
-      res = res.map((val, index) => {
+      return res.map((val, index) => {
         return {
           ...val,
           no: index + 1,
         };
       });
-
-      return res;
     });
 
   // get current session
