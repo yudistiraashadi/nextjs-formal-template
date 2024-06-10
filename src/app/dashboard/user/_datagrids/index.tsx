@@ -19,13 +19,14 @@ import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { users } from "@/db/drizzle/schema";
 import { InferSelectModel } from "drizzle-orm";
+import { useRouter } from "next/navigation";
 
 import {
   SCROLLING_CONFIG,
   exportExcel,
   exportPdf,
 } from "@/utils/devextreme/datagrid";
-import { redirectToEditUser, deleteUser, activateUser } from "../_actions";
+import { deleteUser, activateUser } from "../_actions";
 import { notificationHelper } from "@/utils/notification";
 import { SubmitButton } from "@/components/button";
 
@@ -51,6 +52,8 @@ export function UserDataGrid({
   })[];
   currentUserId: string;
 }) {
+  const router = useRouter();
+
   // DELETE USER
   const [deleteUserState, deleteUserAction] = useFormState(
     deleteUser,
@@ -194,7 +197,7 @@ export function UserDataGrid({
 
             return !isDeleted;
           }}
-          onClick={(e) => redirectToEditUser(e.row?.data.id)}
+          onClick={(e) => router.push(`/dashboard/user/edit/${e.row?.data.id}`)}
         />
 
         {/* Activate User */}
@@ -218,9 +221,14 @@ export function UserDataGrid({
                 <>
                   <Text size="sm">Are you sure to activate this user?</Text>
 
-                  <form action={activateUserAction} className="mt-8">
-                    <input type="hidden" name="userId" value={e.row?.data.id} />
+                  <form
+                    action={(formData) => {
+                      formData.append("userId", e.row?.data.id);
 
+                      activateUserAction(formData);
+                    }}
+                    className="mt-8"
+                  >
                     <div className="flex gap-2">
                       <Button
                         variant="default"
@@ -262,9 +270,14 @@ export function UserDataGrid({
                 <>
                   <Text size="sm">Are you sure to delete this user?</Text>
 
-                  <form action={deleteUserAction} className="mt-8">
-                    <input type="hidden" name="userId" value={e.row?.data.id} />
+                  <form
+                    action={(formData) => {
+                      formData.append("userId", e.row?.data.id);
 
+                      deleteUserAction(formData);
+                    }}
+                    className="mt-8"
+                  >
                     <div className="flex gap-2">
                       <Button
                         variant="default"

@@ -45,6 +45,8 @@ AS $function$begin
 end;$function$
 ;
 
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
 create or replace view "public"."users" as  SELECT users.id,
     users.email,
     users.raw_app_meta_data,

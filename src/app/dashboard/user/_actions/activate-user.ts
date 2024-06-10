@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/db/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 import { users } from "@/db/drizzle/schema";
 import { createDrizzleConnection } from "@/db/drizzle/connection";
@@ -16,17 +17,23 @@ export async function activateUser(prevState: any, formData: FormData) {
     : undefined;
 
   const db = createDrizzleConnection();
-  const userData = await db.select().from(users);
 
-  const result = z
+  const result = await z
     .object({
-      userId: z
-        .string()
-        .refine((val) => userData.find((user) => user.id === val), {
+      userId: z.string().refine(
+        async (val) => {
+          return db
+            .select()
+            .from(users)
+            .where(eq(users.id, val))
+            .then((res) => res.length > 0);
+        },
+        {
           message: "User tidak ditemukan",
-        }),
+        }
+      ),
     })
-    .safeParse({
+    .safeParseAsync({
       userId,
     });
 

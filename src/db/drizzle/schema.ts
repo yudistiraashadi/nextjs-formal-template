@@ -25,10 +25,10 @@ export const userProfiles = pgTable("user_profiles", {
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(),
-  email: text("email"),
+  email: text("email").notNull(),
   name: text("name"),
   rawAppMetaData: jsonb("raw_app_meta_data"),
   rawUserMetaData: jsonb("raw_user_meta_data"),
-  userRoleId: bigserial("user_role_id", { mode: "number" }),
-  userRoleName: text("user_role_name"),
+  userRoleId: bigserial("user_role_id", { mode: "number" }).notNull(),
+  userRoleName: text("user_role_name").notNull(),
 });

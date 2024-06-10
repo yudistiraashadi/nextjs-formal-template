@@ -3,6 +3,7 @@
 import { createAdminClient } from "@/db/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 import { userRoles } from "@/db/drizzle/schema";
 import { createDrizzleConnection } from "@/db/drizzle/connection";
@@ -19,7 +20,7 @@ export async function createUser(prevState: any, formData: FormData) {
     ? (formData.get("name") as string)
     : undefined;
   const roleId = formData.get("roleId")
-    ? parseInt(formData.get("roleId") as string)
+    ? (formData.get("roleId") as string)
     : undefined;
   const password = formData.get("password")
     ? (formData.get("password") as string)
@@ -29,17 +30,23 @@ export async function createUser(prevState: any, formData: FormData) {
     : undefined;
 
   const db = createDrizzleConnection();
-  const userRoleData = await db.select().from(userRoles);
 
-  const result = z
+  const result = await z
     .object({
       username: z.string().min(1),
       name: z.string().min(1),
-      roleId: z
-        .number()
-        .refine((val) => userRoleData.find((role) => role.id === val), {
+      roleId: z.coerce.number().refine(
+        async (val) => {
+          return db
+            .select()
+            .from(userRoles)
+            .where(eq(userRoles.id, val))
+            .then((res) => res.length > 0);
+        },
+        {
           message: "Role tidak ditemukan",
-        }),
+        }
+      ),
       password: z.string().min(6),
       passwordConfirmation: z.string().min(6),
     })
@@ -47,7 +54,7 @@ export async function createUser(prevState: any, formData: FormData) {
       message: "Password confirmation must be same as password",
       path: ["passwordConfirmation"],
     })
-    .safeParse({
+    .safeParseAsync({
       username,
       name,
       roleId,
@@ -99,7 +106,9 @@ export async function createUser(prevState: any, formData: FormData) {
 
   const searchParamString = new URLSearchParams({
     "notification-type": "success",
-    "notification-message": `Berhasil membuat user baru Username: ${createUserData.user.email?.split("@")[0]}`,
+    "notification-message": `Berhasil membuat user baru Username: ${
+      createUserData.user.email?.split("@")[0]
+    }`,
   }).toString();
 
   permanentRedirect(`/dashboard/user?${searchParamString}`);

@@ -21,7 +21,7 @@ export async function editUser(prevState: any, formData: FormData) {
     ? (formData.get("name") as string)
     : undefined;
   const roleId = formData.get("roleId")
-    ? parseInt(formData.get("roleId") as string)
+    ? (formData.get("roleId") as string)
     : undefined;
   const password = formData.get("password")
     ? (formData.get("password") as string)
@@ -31,18 +31,26 @@ export async function editUser(prevState: any, formData: FormData) {
     : undefined;
 
   const db = createDrizzleConnection();
-  const userRoleData = await db.select().from(userRoles);
 
-  const result = z
+  const result = await z
     .object({
       id: z.string(),
       username: z.string().min(1).optional(),
       name: z.string().min(1).optional(),
-      roleId: z
+      roleId: z.coerce
         .number()
-        .refine((val) => userRoleData.find((role) => role.id === val), {
-          message: "Role tidak ditemukan",
-        })
+        .refine(
+          async (val) => {
+            return db
+              .select()
+              .from(userRoles)
+              .where(eq(userRoles.id, val))
+              .then((res) => res.length > 0);
+          },
+          {
+            message: "Role tidak ditemukan",
+          }
+        )
         .optional(),
       password: z.string().min(6).optional(),
       passwordConfirmation: z.string().min(6).optional(),
@@ -51,7 +59,7 @@ export async function editUser(prevState: any, formData: FormData) {
       message: "Password confirmation must be same as password",
       path: ["passwordConfirmation"],
     })
-    .safeParse({
+    .safeParseAsync({
       id,
       username,
       name,
@@ -95,12 +103,8 @@ export async function editUser(prevState: any, formData: FormData) {
           password: result.data.password,
         });
 
-      // supabase error (MASIH NGEBUG KALAU ADA PARAM EMAIL, JADI IGNORE ERRORNYA AJA KALAU STATUS 504)
       if (updateUserError) {
-        // console.error({ updateUserData, updateUserError });
-        if (updateUserError.status !== 504) {
-          throw new Error(updateUserError.message);
-        }
+        throw new Error(updateUserError.message);
       }
     });
   } catch (error: Error | any) {
