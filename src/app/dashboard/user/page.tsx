@@ -1,26 +1,8 @@
-import { users } from "@/db/drizzle/schema";
-import { createDrizzleConnection } from "@/db/drizzle/connection";
-
 import { UserDataGrid } from "./_datagrids";
 import { createClient } from "@/db/supabase/server";
+import { getAllUserData } from "@/app/_actions";
 
 export default async function DataUser() {
-  const db = createDrizzleConnection();
-
-  // get all users
-  const userData = await db
-    .select()
-    .from(users)
-    .orderBy(users.userRoleName)
-    .then((res) => {
-      return res.map((val, index) => {
-        return {
-          ...val,
-          no: index + 1,
-        };
-      });
-    });
-
   // get current session
   const supabase = createClient();
   const {
@@ -31,6 +13,11 @@ export default async function DataUser() {
   if (!user || userError) {
     return <div>Error: {userError?.message}</div>;
   }
+
+  // get all user data
+  const userData = await getAllUserData().then((res) =>
+    res.map((data, index) => ({ ...data, no: index + 1 }))
+  );
 
   return (
     <section className="border-divider rounded border bg-white p-4">

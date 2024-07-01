@@ -5,8 +5,24 @@ import {
   timestamp,
   uuid,
   jsonb,
+  pgSchema,
 } from "drizzle-orm/pg-core";
 
+/**
+ * Auth Schema
+ */
+export const authSchema = pgSchema("auth");
+
+export const authUsers = authSchema.table("users", {
+  id: uuid("id").primaryKey(),
+  email: text("email").notNull(),
+  rawAppMetaData: jsonb("raw_app_meta_data"),
+  rawUserMetaData: jsonb("raw_user_meta_data"),
+});
+
+/**
+ * Public Schema
+ */
 export const userRoles = pgTable("user_roles", {
   id: bigserial("id", { mode: "number" }),
   createdAt: timestamp("created_at").defaultNow(),
@@ -21,14 +37,4 @@ export const userProfiles = pgTable("user_profiles", {
   userRoleId: bigserial("user_role_id", { mode: "number" }).references(
     () => userRoles.id
   ),
-});
-
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey(),
-  email: text("email").notNull(),
-  name: text("name"),
-  rawAppMetaData: jsonb("raw_app_meta_data"),
-  rawUserMetaData: jsonb("raw_user_meta_data"),
-  userRoleId: bigserial("user_role_id", { mode: "number" }).notNull(),
-  userRoleName: text("user_role_name").notNull(),
 });

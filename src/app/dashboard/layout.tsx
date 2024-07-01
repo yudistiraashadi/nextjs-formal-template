@@ -1,11 +1,10 @@
 import { DashboardAppShell } from "@/components/appshell";
 import { createClient } from "@/db/supabase/server";
-import { eq } from "drizzle-orm";
 
 import { notificationHelper } from "@/utils/notification";
 import { notFound } from "next/navigation";
-import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { users } from "@/db/drizzle/schema";
+
+import { getUserData } from "@/app/_actions";
 
 export default async function DashboardLayout({
   children,
@@ -28,13 +27,7 @@ export default async function DashboardLayout({
     return notFound();
   }
 
-  const db = createDrizzleConnection();
-
-  const userData = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, user.id))
-    .then((res) => res[0] ?? null);
+  const userData = await getUserData(user.id);
 
   return <DashboardAppShell userData={userData}>{children}</DashboardAppShell>;
 }

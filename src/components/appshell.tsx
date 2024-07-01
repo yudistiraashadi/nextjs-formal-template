@@ -14,8 +14,8 @@ import {
 } from "@mantine/core";
 import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
-import { users } from "@/db/drizzle/schema";
-import { InferSelectModel } from "drizzle-orm";
+
+import { getUserData } from "@/app/_actions";
 
 import Link from "next/link";
 
@@ -28,7 +28,7 @@ export function DashboardAppShell({
   children,
   userData,
 }: React.PropsWithChildren<{
-  userData: InferSelectModel<typeof users>;
+  userData: Awaited<ReturnType<typeof getUserData>>;
 }>) {
   const [opened, { toggle }] = useDisclosure();
 

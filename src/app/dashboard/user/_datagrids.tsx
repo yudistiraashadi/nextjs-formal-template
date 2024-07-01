@@ -17,8 +17,6 @@ import { Badge } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { Text, Button } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { users } from "@/db/drizzle/schema";
-import { InferSelectModel } from "drizzle-orm";
 import { useRouter } from "next/navigation";
 
 import {
@@ -26,16 +24,10 @@ import {
   exportExcel,
   exportPdf,
 } from "@/utils/devextreme/datagrid";
-import { deleteUser, activateUser } from "../_actions";
+import { deleteUser, activateUser } from "./_actions";
 import { notificationHelper } from "@/utils/notification";
 import { SubmitButton } from "@/components/button";
-
-const userInitialState = {
-  message: undefined,
-  error: {
-    general: undefined,
-  },
-};
+import { getAllUserData } from "@/app/_actions";
 
 /**
  * Users datagrid, with modal to create and edit user
@@ -47,7 +39,7 @@ export function UserDataGrid({
   userData,
   currentUserId,
 }: {
-  userData: (InferSelectModel<typeof users> & {
+  userData: (Awaited<ReturnType<typeof getAllUserData>>[number] & {
     no: number;
   })[];
   currentUserId: string;
@@ -57,7 +49,7 @@ export function UserDataGrid({
   // DELETE USER
   const [deleteUserState, deleteUserAction] = useFormState(
     deleteUser,
-    userInitialState
+    undefined
   );
 
   useEffect(
@@ -85,7 +77,7 @@ export function UserDataGrid({
   // ACTIVATE USER
   const [activateUserState, activateUserAction] = useFormState(
     activateUser,
-    userInitialState
+    undefined
   );
 
   useEffect(

@@ -1,4 +1,4 @@
-import { Paper, Image } from "@mantine/core";
+import { Paper } from "@mantine/core";
 
 import { LoginForm } from "@/app/(login)/_forms";
 

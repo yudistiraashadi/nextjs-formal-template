@@ -5,23 +5,12 @@ import { TextInput, PasswordInput, Select } from "@mantine/core";
 import { useFormState } from "react-dom";
 import { type InferSelectModel } from "drizzle-orm";
 
-import { userRoles, users } from "@/db/drizzle/schema";
+import { userRoles } from "@/db/drizzle/schema";
 import { notificationHelper } from "@/utils/notification";
 
-import { createUser, editUser } from "../_actions";
+import { createUser, editUser } from "./_actions";
 import { SubmitButton } from "@/components/button";
-
-const userInitialState = {
-  message: undefined,
-  error: {
-    general: undefined,
-    username: undefined,
-    name: undefined,
-    roleId: undefined,
-    password: undefined,
-    passwordConfirmation: undefined,
-  },
-};
+import { getUserData } from "@/app/_actions";
 
 export function CreateOrEditUserForm({
   state,
@@ -30,11 +19,11 @@ export function CreateOrEditUserForm({
 }: {
   state: "create" | "edit";
   userRoleData: InferSelectModel<typeof userRoles>[];
-  userData?: InferSelectModel<typeof users>;
+  userData?: Awaited<ReturnType<typeof getUserData>>;
 }) {
   const [userState, userAction] = useFormState(
     state === "create" ? createUser : editUser,
-    userInitialState
+    undefined
   );
 
   // action for form state changes

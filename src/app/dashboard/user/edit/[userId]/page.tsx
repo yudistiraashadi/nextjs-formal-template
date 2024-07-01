@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
 
 import { createDrizzleConnection } from "@/db/drizzle/connection";
-import { userRoles, users } from "@/db/drizzle/schema";
+import { userRoles } from "@/db/drizzle/schema";
 
 import { BackButton } from "@/components/button";
 
 import { CreateOrEditUserForm } from "../../_forms";
+import { getUserData } from "@/app/_actions";
 
 export default async function EditUser({
   params,
@@ -17,11 +18,7 @@ export default async function EditUser({
   const userId = params.userId;
   const db = createDrizzleConnection();
 
-  const currentUserData = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, userId))
-    .then((res) => res[0] ?? null);
+  const currentUserData = await getUserData(userId);
 
   if (!currentUserData) {
     return <div>User not found</div>;

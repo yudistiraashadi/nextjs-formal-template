@@ -4,20 +4,11 @@ import { TextInput, PasswordInput, Alert } from "@mantine/core";
 import { useFormState } from "react-dom";
 import { IconInfoCircle } from "@tabler/icons-react";
 
-import { login } from "../_actions";
+import { login } from "./_actions";
 import { SubmitButton } from "@/components/button";
 
-const loginInitialState = {
-  message: undefined,
-  error: {
-    general: undefined,
-    username: undefined,
-    password: undefined,
-  },
-};
-
 export function LoginForm() {
-  const [loginState, loginAction] = useFormState(login, loginInitialState);
+  const [loginState, loginAction] = useFormState(login, undefined);
 
   return (
     <form action={loginAction}>
@@ -31,7 +22,7 @@ export function LoginForm() {
         label="Username"
         required
         name="username"
-        error={loginState.error.username}
+        error={loginState?.error.username}
       />
 
       <PasswordInput
@@ -39,7 +30,7 @@ export function LoginForm() {
         required
         mt={"1rem"}
         name="password"
-        error={loginState.error.password}
+        error={loginState?.error.password}
       />
 
       <SubmitButton text="Login" fullWidth mt="xl" />

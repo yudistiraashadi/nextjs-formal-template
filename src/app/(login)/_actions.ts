@@ -8,26 +8,23 @@ import { z } from "zod";
  * Login
  */
 export async function login(prevState: any, formData: FormData) {
-  const username = formData.get("username")
-    ? (formData.get("username") as string)
-    : undefined;
-  const password = formData.get("password")
-    ? (formData.get("password") as string)
-    : undefined;
-
-  const result = z
+  const validation = z
     .object({
       username: z.string().min(1),
       password: z.string().min(6),
     })
     .safeParse({
-      username,
-      password,
+      username: formData.get("username")
+        ? (formData.get("username") as string)
+        : undefined,
+      password: formData.get("password")
+        ? (formData.get("password") as string)
+        : undefined,
     });
 
   // validasi error
-  if (!result.success) {
-    let errorFormatted = result.error.format();
+  if (!validation.success) {
+    let errorFormatted = validation.error.format();
 
     return {
       error: {
@@ -41,8 +38,8 @@ export async function login(prevState: any, formData: FormData) {
 
   // login with supabase
   const { error } = await supabase.auth.signInWithPassword({
-    email: result.data.username + "@email.com",
-    password: result.data.password,
+    email: validation.data.username + "@email.com",
+    password: validation.data.password,
   });
 
   // supabase error
