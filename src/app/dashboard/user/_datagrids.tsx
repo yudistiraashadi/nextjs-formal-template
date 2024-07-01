@@ -49,7 +49,7 @@ export function UserDataGrid({
   // DELETE USER
   const [deleteUserState, deleteUserAction] = useFormState(
     deleteUser,
-    undefined
+    undefined,
   );
 
   useEffect(
@@ -70,14 +70,14 @@ export function UserDataGrid({
         modals.closeAll();
       }
     },
-    [deleteUserState]
+    [deleteUserState],
   );
   // END OF DELETE USER
 
   // ACTIVATE USER
   const [activateUserState, activateUserAction] = useFormState(
     activateUser,
-    undefined
+    undefined,
   );
 
   useEffect(
@@ -98,7 +98,7 @@ export function UserDataGrid({
         modals.closeAll();
       }
     },
-    [activateUserState]
+    [activateUserState],
   );
   // END OF ACTIVATE USER
 

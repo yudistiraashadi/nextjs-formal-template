@@ -23,7 +23,7 @@ export function CreateOrEditUserForm({
 }) {
   const [userState, userAction] = useFormState(
     state === "create" ? createUser : editUser,
-    undefined
+    undefined,
   );
 
   // action for form state changes
@@ -36,7 +36,7 @@ export function CreateOrEditUserForm({
         });
       }
     },
-    [userState]
+    [userState],
   );
 
   return (

@@ -1,5 +1,3 @@
-import { eq } from "drizzle-orm";
-
 import { createDrizzleConnection } from "@/db/drizzle/connection";
 import { userRoles } from "@/db/drizzle/schema";
 
@@ -7,6 +5,7 @@ import { BackButton } from "@/components/button";
 
 import { CreateOrEditUserForm } from "../../_forms";
 import { getUserData } from "@/app/_actions";
+import { Container } from "@/components/container";
 
 export default async function EditUser({
   params,
@@ -27,7 +26,7 @@ export default async function EditUser({
   const userRoleData = await db.select().from(userRoles);
 
   return (
-    <div className="space-y-4 bg-white p-4 drop-shadow">
+    <Container>
       <BackButton href="/dashboard/user" />
       <h1 className="text-3xl font-bold">Edit User</h1>
 
@@ -36,6 +35,6 @@ export default async function EditUser({
         userRoleData={userRoleData}
         userData={currentUserData}
       />
-    </div>
+    </Container>
   );
 }
