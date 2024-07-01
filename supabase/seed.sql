@@ -172,8 +172,6 @@ INSERT INTO "public"."user_profiles" ("id", "created_at", "updated_at", "name", 
 -- Name: refresh_tokens_id_seq; Type: SEQUENCE SET; Schema: auth; Owner: supabase_auth_admin
 --
 
-SELECT pg_catalog.setval('"auth"."refresh_tokens_id_seq"', 36, true);
-
 
 --
 -- Name: key_key_id_seq; Type: SEQUENCE SET; Schema: pgsodium; Owner: supabase_admin
