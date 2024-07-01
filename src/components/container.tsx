@@ -4,8 +4,8 @@ export function Container({
   children,
   className,
 }: {
-  children: React.ReactNode;
-  className: string;
+  children: React.ReactNode | React.ReactNode[];
+  className?: string;
 }) {
   return (
     <div className={cn("space-y-4 rounded border bg-white p-4", className)}>
