@@ -22,6 +22,7 @@ import { SearchParamsNotification } from "@/components/notification";
 import { Suspense } from "react";
 import { EnvProvider } from "@/env/provider";
 import NextTopLoader from "nextjs-toploader";
+import TanstackQueryProvider from "@/app/tanstack-query-provider";
 
 export const metadata: Metadata = {
   title: "Next.js Formal Template",
@@ -44,28 +45,30 @@ export default function RootLayout({
         <NextTopLoader />
 
         <EnvProvider>
-          <MantineProvider
-            theme={{
-              fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
-              headings: {
+          <TanstackQueryProvider>
+            <MantineProvider
+              theme={{
                 fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
-              },
-            }}
-          >
-            <ModalsProvider>
-              <Notifications
-                position="top-right"
-                zIndex={1000}
-                autoClose={10000}
-              />
+                headings: {
+                  fontFamily: `${inter.style.fontFamily}, ${DEFAULT_THEME.fontFamily}`,
+                },
+              }}
+            >
+              <ModalsProvider>
+                <Notifications
+                  position="top-right"
+                  zIndex={1000}
+                  autoClose={10000}
+                />
 
-              <Suspense>
-                <SearchParamsNotification />
-              </Suspense>
+                <Suspense>
+                  <SearchParamsNotification />
+                </Suspense>
 
-              <Box bg={"gray.1"}>{children}</Box>
-            </ModalsProvider>
-          </MantineProvider>
+                <Box bg={"gray.1"}>{children}</Box>
+              </ModalsProvider>
+            </MantineProvider>
+          </TanstackQueryProvider>
         </EnvProvider>
       </body>
     </html>
