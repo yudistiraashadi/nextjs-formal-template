@@ -6,6 +6,8 @@ import {
   uuid,
   jsonb,
   pgSchema,
+  bigint,
+  numeric,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -24,17 +26,25 @@ export const authUsers = authSchema.table("users", {
  * Public Schema
  */
 export const userRoles = pgTable("user_roles", {
-  id: bigserial("id", { mode: "number" }),
-  createdAt: timestamp("created_at").defaultNow(),
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   name: text("name").notNull(),
 });
 
 export const userProfiles = pgTable("user_profiles", {
-  id: uuid("id"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  id: uuid("id").primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
   name: text("name"),
   userRoleId: bigserial("user_role_id", { mode: "number" }).references(
-    () => userRoles.id
+    () => userRoles.id,
   ),
+});
+
+export const inventory = pgTable("inventory", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  name: text("name").notNull(),
+  quantity: bigint("quantity", { mode: "number" }).notNull(),
+  price: numeric("price").notNull(),
 });

@@ -12,7 +12,12 @@ import {
   Menu,
   Text,
 } from "@mantine/core";
-import { IconHome, IconUserCircle, IconUsersGroup } from "@tabler/icons-react";
+import {
+  IconBuildingWarehouse,
+  IconHome,
+  IconUserCircle,
+  IconUsersGroup,
+} from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
 
 import { getUserData } from "@/app/_actions";
@@ -96,6 +101,15 @@ export function DashboardAppShell({
           href="/dashboard"
           active={pathname === "/dashboard"}
           leftSection={<IconHome size="1.25rem" stroke={1.5} />}
+        />
+
+        <NavLink
+          label="Inventory"
+          onClick={toggle}
+          component={Link}
+          href="/dashboard/inventory"
+          active={pathname.startsWith("/dashboard/inventory")}
+          leftSection={<IconBuildingWarehouse size="1.25rem" stroke={1.5} />}
         />
 
         {/* ONLY FOR ADMIN */}
