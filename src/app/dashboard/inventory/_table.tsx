@@ -10,10 +10,6 @@ import {
   type MRT_PaginationState,
   type MRT_SortingState,
   type MRT_ColumnFilterFnsState,
-  MRT_GlobalFilterTextInput,
-  MRT_ToggleDensePaddingButton,
-  MRT_ToggleFiltersButton,
-  MRT_ShowHideColumnsButton,
   MRT_ToggleGlobalFilterButton,
 } from "mantine-react-table";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -21,6 +17,10 @@ import { InferSelectModel } from "drizzle-orm";
 import { inventory } from "@/db/drizzle/schema";
 
 import { getInventoryData } from "./_actions";
+import {
+  defaultNumberColumnFilter,
+  defaultStringColumnFilter,
+} from "@/utils/mantine-react-table";
 
 type Inventory = InferSelectModel<typeof inventory>;
 
@@ -30,59 +30,22 @@ export function InventoryTable() {
       {
         accessorKey: "id",
         header: "ID",
-        columnFilterModeOptions: [
-          "equals",
-          "greaterThan",
-          "greaterThanOrEqualTo",
-          "lessThan",
-          "lessThanOrEqualTo",
-          "between",
-          "betweenInclusive",
-          "empty",
-          "notEmpty",
-        ],
+        columnFilterModeOptions: defaultNumberColumnFilter,
       },
       {
         accessorKey: "name",
         header: "Name",
-        columnFilterModeOptions: [
-          "contains",
-          "startsWith",
-          "endsWith",
-          "equals",
-          "empty",
-          "notEmpty",
-        ],
+        columnFilterModeOptions: defaultStringColumnFilter,
       },
       {
         accessorKey: "quantity",
         header: "Quantity",
-        columnFilterModeOptions: [
-          "equals",
-          "greaterThan",
-          "greaterThanOrEqualTo",
-          "lessThan",
-          "lessThanOrEqualTo",
-          "between",
-          "betweenInclusive",
-          "empty",
-          "notEmpty",
-        ],
+        columnFilterModeOptions: defaultNumberColumnFilter,
       },
       {
         accessorKey: "price",
         header: "Price",
-        columnFilterModeOptions: [
-          "equals",
-          "greaterThan",
-          "greaterThanOrEqualTo",
-          "lessThan",
-          "lessThanOrEqualTo",
-          "between",
-          "betweenInclusive",
-          "empty",
-          "notEmpty",
-        ],
+        columnFilterModeOptions: defaultNumberColumnFilter,
       },
     ],
     [],
@@ -127,12 +90,21 @@ export function InventoryTable() {
   const table = useMantineReactTable({
     columns,
     data: inventory.data?.data ?? [],
-    enableColumnFilterModes: true,
     initialState: {
-      showColumnFilters: true,
       showGlobalFilter: true,
       density: "xs",
     },
+    state: {
+      columnFilterFns,
+      columnFilters,
+      globalFilter,
+      pagination,
+      sorting,
+      isLoading: inventory.isLoading,
+      showAlertBanner: inventory.isError,
+      showProgressBars: inventory.isLoading,
+    },
+    enableColumnFilterModes: true,
     enableHiding: false,
     manualFiltering: true,
     manualPagination: true,
@@ -140,7 +112,8 @@ export function InventoryTable() {
     mantineToolbarAlertBannerProps: inventory.isError
       ? {
           color: "red",
-          children: "Error loading data",
+          title: "Error",
+          children: inventory.error?.message ?? "An error occurred.",
         }
       : undefined,
     renderToolbarInternalActions: ({ table }) => (
@@ -154,16 +127,6 @@ export function InventoryTable() {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     rowCount: inventory.data?.meta.totalRowCount ?? 0,
-    state: {
-      columnFilterFns,
-      columnFilters,
-      globalFilter,
-      isLoading: inventory.isLoading,
-      pagination,
-      showAlertBanner: inventory.isError,
-      showProgressBars: inventory.isLoading,
-      sorting,
-    },
   });
 
   return <MantineReactTable table={table} />;
